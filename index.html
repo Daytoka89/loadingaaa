@@ -2,20 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>L'Empire de Kuat - Ordre Krath</title>
-    <!-- Polices thématiques Star Wars / Sci-Fi : Orbitron (HUD/Titres) et Share Tech Mono (Terminal Holonet) -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>Centralist United States — Terminal de Commandement UCUS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* Palette L'Empire de Windu (Violet Améthyste, Or Impérial, Sombre Tactique) */
-            --accent-main: #9333ea;       /* Violet Windu */
-            --accent-bright: #c084fc;     /* Violet Améthyste lumineux */
-            --accent-gold: #fbbf24;       /* Doré Impérial */
-            --accent-glow: rgba(192, 132, 252, 0.4);
-            --bg-card: rgba(15, 10, 26, 0.88);
-            --border-color: rgba(168, 85, 247, 0.45);
-            --grid-color: rgba(168, 85, 247, 0.08);
+            /* Palette Centralist United States (Apocalypse Militaire - Rouge & Sombre) */
+            --bg-deep: #080404;
+            --bg-panel: rgba(14, 7, 7, 0.90);
+            --bg-inset: rgba(8, 4, 4, 0.95);
+            --red-main: #dc2626;
+            --red-dark: #7f1d1d;
+            --red-bright: #f87171;
+            --amber-warn: #d97706;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-color: rgba(220, 38, 38, 0.55);
+            --grid-color: rgba(220, 38, 38, 0.08);
         }
 
         * {
@@ -26,81 +29,152 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: #06030a url("background.png") no-repeat center center fixed;
+            background: var(--bg-deep) url("background.png") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Orbitron', sans-serif;
-            color: #f3e8ff;
+            color: var(--text-main);
             height: 100vh;
             user-select: none;
         }
 
-        /* OVERLAY HOLONET & EFFET GRILLE TACTIQUE AMÉTHYSTE */
+        /* SÉQUENCE D'ALLUMAGE TERMINAL CRT */
+        #crt-boot-screen {
+            position: fixed;
+            inset: 0;
+            background: #050202;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+            transition: opacity 0.6s ease-out, visibility 0.6s;
+        }
+
+        #crt-boot-screen.boot-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #crt-beam {
+            width: 0%;
+            height: 3px;
+            background: var(--red-bright);
+            box-shadow: 0 0 25px var(--red-main), 0 0 50px var(--red-bright);
+            animation: crtExpand 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes crtExpand {
+            0% { width: 0%; height: 2px; opacity: 0.4; }
+            60% { width: 100%; height: 3px; opacity: 1; }
+            100% { width: 100%; height: 1px; opacity: 0.2; }
+        }
+
+        #bios-text {
+            margin-top: 24px;
+            width: 680px;
+            max-width: 90%;
+            color: var(--red-bright);
+            font-size: 15px;
+            line-height: 1.8;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+        }
+
+        /* GRILLE TÉLÉMÉTRIQUE & SCANLINES APOCALYPSE */
         #overlay {
             position: fixed;
             inset: 0;
-            background: 
-                radial-gradient(circle at center, rgba(30, 10, 50, 0.35) 0%, rgba(6, 3, 10, 0.96) 100%),
+            background:
+                radial-gradient(circle at center, rgba(45, 8, 8, 0.28) 0%, rgba(5, 2, 2, 0.96) 100%),
                 linear-gradient(var(--grid-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 100% 100%, 35px 35px, 35px 35px;
+            background-size: 100% 100%, 40px 40px, 40px 40px;
             z-index: 1;
         }
 
-        /* Effet Scanlines Holonet modernisé */
         #overlay::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: repeating-linear-gradient(to bottom, rgba(168, 85, 247, 0.04), rgba(168, 85, 247, 0.04) 2px, transparent 2px, transparent 5px);
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(180, 20, 20, 0.05),
+                rgba(180, 20, 20, 0.05) 2px,
+                transparent 2px,
+                transparent 5px
+            );
             pointer-events: none;
-            opacity: 0.85;
         }
 
-        /* VIGNETTE DE DATAPAD IMPÉRIAL */
+        /* FAISCEAU DE BALAYAGE RADAR VERTICAL */
+        #radar-sweep {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 18px;
+            background: linear-gradient(to bottom, transparent, rgba(220, 38, 38, 0.14), rgba(248, 113, 113, 0.35));
+            border-bottom: 1px solid rgba(248, 113, 113, 0.45);
+            z-index: 2;
+            pointer-events: none;
+            animation: sweepDown 6s linear infinite;
+        }
+
+        @keyframes sweepDown {
+            0% { top: -20px; }
+            100% { top: 100vh; }
+        }
+
+        /* VIGNETTE & FLICKER CRT SUBTIL */
         #ambient-glow {
             position: fixed;
-            width: 100%;
-            height: 100%;
-            box-shadow: inset 0 0 160px rgba(15, 3, 30, 0.92);
+            inset: 0;
+            box-shadow: inset 0 0 180px rgba(0, 0, 0, 0.95), inset 0 0 60px rgba(127, 29, 29, 0.35);
             pointer-events: none;
             z-index: 2;
+            animation: crtFlicker 7s infinite;
         }
 
-        /* PANNEAU HOLONET STYLE CADRE IMPÉRIAL MODERNE */
-        .tactical-border {
+        @keyframes crtFlicker {
+            0%, 96%, 100% { opacity: 1; }
+            97% { opacity: 0.86; }
+            98% { opacity: 0.98; }
+            99% { opacity: 0.90; }
+        }
+
+        /* CADRE TACTIQUE CENTRALIST UNITED STATES */
+        .tactical-panel {
             position: relative;
-            background: var(--bg-card);
+            background: var(--bg-panel);
             border: 1px solid var(--border-color);
-            box-shadow: 0 0 25px rgba(147, 51, 234, 0.25), inset 0 0 20px rgba(168, 85, 247, 0.12);
-            backdrop-filter: blur(12px);
-            clip-path: polygon(
-                0 15px, 15px 0, 
-                calc(100% - 15px) 0, 100% 15px, 
-                100% calc(100% - 15px), calc(100% - 15px) 100%, 
-                15px 100%, 0 calc(100% - 15px)
-            );
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.85), inset 0 0 25px rgba(127, 29, 29, 0.22);
         }
 
-        /* Coins renforcés style armure de la 187ème Légion */
-        .tactical-border::before, .tactical-border::after {
+        .tactical-panel::before,
+        .tactical-panel::after {
             content: "";
             position: absolute;
-            width: 16px;
-            height: 16px;
-            border-color: var(--accent-bright);
+            width: 20px;
+            height: 20px;
+            border-color: var(--red-bright);
             border-style: solid;
             pointer-events: none;
         }
-        .tactical-border::before {
-            top: 0; left: 0;
+
+        .tactical-panel::before {
+            top: -1px;
+            left: -1px;
             border-width: 3px 0 0 3px;
         }
-        .tactical-border::after {
-            bottom: 0; right: 0;
+
+        .tactical-panel::after {
+            bottom: -1px;
+            right: -1px;
             border-width: 0 3px 3px 0;
         }
 
-        /* STRUCTURE GLOBALE */
+        /* STRUCTURE PRINCIPALE (APPARAÎT APRÈS ALLUMAGE) */
         #main-hud {
             position: relative;
             width: 100%;
@@ -108,36 +182,57 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 40px 50px;
+            padding: 32px 44px;
             z-index: 3;
+            opacity: 0;
+            transform: scale(0.985);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
         }
 
-        /* HEADER */
+        #main-hud.hud-online {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* BANDEAU D'ALERTE APOCALYPSE SUPÉRIEUR */
+        .hazard-strip {
+            width: 100%;
+            height: 8px;
+            margin-bottom: 12px;
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--red-main),
+                var(--red-main) 12px,
+                #180808 12px,
+                #180808 24px
+            );
+            border: 1px solid var(--red-dark);
+            opacity: 0.85;
+        }
+
+        /* EN-TÊTE DU TERMINAL */
         .hud-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--border-color);
-            background: rgba(12, 6, 22, 0.75);
-            padding: 18px 30px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            padding: 18px 28px;
+            border-left: 5px solid var(--red-main);
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 22px;
         }
 
         #logo {
-            width: 80px;
-            height: 80px;
+            width: 78px;
+            height: 78px;
             object-fit: contain;
-            filter: drop-shadow(0 0 12px var(--accent-bright));
-            border: 1px solid var(--border-color);
-            padding: 4px;
-            background: rgba(25, 10, 40, 0.5);
-            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+            border: 1px solid var(--red-main);
+            padding: 6px;
+            background: var(--bg-inset);
+            filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.65));
         }
 
         #title-container {
@@ -148,29 +243,29 @@
         #title {
             font-family: 'Orbitron', sans-serif;
             font-weight: 900;
-            font-size: 32px;
-            letter-spacing: 4px;
+            font-size: 30px;
+            letter-spacing: 3.5px;
             text-transform: uppercase;
-            color: #ffffff;
-            text-shadow: 0 0 15px var(--accent-bright);
+            color: var(--text-main);
+            text-shadow: 0 0 16px rgba(220, 38, 38, 0.75);
         }
 
         #subtitle {
             font-size: 13px;
-            color: var(--accent-gold);
-            letter-spacing: 3.5px;
+            color: var(--red-bright);
+            letter-spacing: 3px;
             font-family: 'Share Tech Mono', monospace;
             text-transform: uppercase;
-            margin-top: 4px;
+            margin-top: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         #subtitle::before {
-            content: "●";
-            color: var(--accent-bright);
-            animation: blink 1.2s infinite;
+            content: "■";
+            color: var(--red-main);
+            animation: blink 1s infinite;
         }
 
         .header-right {
@@ -178,83 +273,95 @@
             font-family: 'Share Tech Mono', monospace;
             font-size: 13px;
             letter-spacing: 1.5px;
-            color: #bfa6d9;
-            line-height: 1.8;
-            border-left: 3px solid var(--accent-gold);
-            padding-left: 20px;
+            color: var(--text-muted);
+            line-height: 1.85;
+            border-left: 2px solid var(--red-dark);
+            padding-left: 22px;
         }
 
-        .highlight-text {
-            color: var(--accent-bright);
+        .highlight-red {
+            color: var(--red-bright);
             font-weight: bold;
         }
 
-        .highlight-gold {
-            color: var(--accent-gold);
+        .highlight-amber {
+            color: var(--amber-warn);
             font-weight: bold;
         }
 
-        .discord-link {
-            color: var(--accent-bright);
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .discord-link:hover {
-            color: #ffffff;
-            text-shadow: 0 0 10px var(--accent-bright);
-        }
-
-        /* REGISTRE DU TERMINAL HOLONET */
+        /* ZONE CENTRALE : TERMINAL + TÉLÉMÉTRIE SECTEUR */
         .hud-center {
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 24px;
             flex-grow: 1;
-            margin: 25px 0;
+            margin: 22px 0;
         }
 
         #terminal {
-            width: 1000px;
+            width: 820px;
             max-width: 100%;
-            height: 300px;
-            padding: 25px 30px;
-            overflow-y: hidden;
+            height: 315px;
+            padding: 20px 26px;
+            overflow: hidden;
             font-family: 'Share Tech Mono', monospace;
             font-size: 15px;
-            color: #e9d5ff;
-            background: rgba(8, 4, 15, 0.92);
+            color: var(--text-main);
+            background: var(--bg-inset);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-topbar {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--red-dark);
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+            font-size: 12px;
+            color: var(--red-bright);
+            letter-spacing: 2px;
         }
 
         #log {
-            line-height: 2.1;
+            line-height: 1.95;
+            flex-grow: 1;
         }
 
         .log-entry {
             opacity: 0;
-            animation: fadeInLog 0.3s ease-out forwards;
+            animation: fadeInLog 0.25s ease-out forwards;
             display: flex;
             align-items: center;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .log-entry::before {
-            content: "◆ [KUAT-NET] ";
-            color: var(--accent-gold);
-            margin-right: 12px;
+            content: "[UCUS-SYS] > ";
+            color: var(--red-main);
+            margin-right: 10px;
             font-weight: bold;
+        }
+
+        .log-entry.warn::before {
+            content: "[ALERTE]   > ";
+            color: var(--amber-warn);
         }
 
         @keyframes fadeInLog {
-            from { transform: translateY(6px); opacity: 0; }
-            to { transform: translateY(0); opacity: 0.95; }
+            from { transform: translateX(-8px); opacity: 0; }
+            to { transform: translateX(0); opacity: 0.96; }
+        }
+
+        #cursor-line {
+            color: var(--red-bright);
+            font-weight: bold;
+            margin-top: 4px;
         }
 
         #line {
-            animation: blink 0.8s infinite;
-            color: var(--accent-bright);
-            font-weight: bold;
+            animation: blink 0.75s infinite;
         }
 
         @keyframes blink {
@@ -262,10 +369,56 @@
             50% { opacity: 0; }
         }
 
-        /* BAS DE PAGE (BARRE DE DÉPLOIEMENT) */
+        /* PANNEAU LATÉRAL : ÉTAT DE SURVIE & PROTOCOLE */
+        #status-sidebar {
+            width: 320px;
+            height: 315px;
+            padding: 20px 22px;
+            font-family: 'Share Tech Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: var(--bg-inset);
+        }
+
+        .sidebar-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--red-bright);
+            letter-spacing: 2px;
+            border-bottom: 1px solid var(--red-dark);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 7px 0;
+            border-bottom: 1px dashed rgba(127, 29, 29, 0.45);
+            color: var(--text-muted);
+        }
+
+        .telemetry-val {
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .directive-box {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(127, 29, 29, 0.22);
+            border-left: 3px solid var(--red-main);
+            font-size: 12px;
+            line-height: 1.5;
+            color: #fca5a5;
+        }
+
+        /* PIED DE PAGE : JAUGE DE DÉPLOIEMENT */
         .hud-footer {
-            border-top: 2px solid var(--border-color);
-            padding-top: 25px;
+            padding: 18px 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -273,107 +426,147 @@
 
         #status-container {
             width: 100%;
-            max-width: 800px;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-family: 'Share Tech Mono', monospace;
             font-size: 14px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: #bfa6d9;
         }
 
         #status {
-            color: #ffffff;
-            font-weight: 600;
+            color: var(--text-main);
         }
 
         #counter {
-            color: var(--accent-gold);
-            font-weight: bold;
+            color: var(--red-bright);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
         }
 
         #progress-container {
             width: 100%;
-            max-width: 800px;
-            height: 16px;
-            background: rgba(8, 4, 15, 0.95);
-            border: 1px solid var(--border-color);
-            border-radius: 2px;
-            overflow: hidden;
+            height: 18px;
+            background: var(--bg-inset);
+            border: 1px solid var(--red-main);
             padding: 2px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
         }
 
         #progress {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #581c87 0%, var(--accent-main) 50%, var(--accent-bright) 85%, var(--accent-gold) 100%);
-            border-radius: 1px;
-            box-shadow: 0 0 14px var(--accent-glow);
-            transition: width 0.3s ease-out;
+            background: linear-gradient(90deg, var(--red-dark) 0%, var(--red-main) 60%, var(--red-bright) 100%);
+            box-shadow: 0 0 16px rgba(220, 38, 38, 0.8);
+            transition: width 0.25s ease-out;
         }
 
-        /* META DONNÉES DE L'EMPIRE DE WINDU */
         .hud-meta {
             width: 100%;
             display: flex;
             justify-content: space-between;
-            margin-top: 25px;
+            margin-top: 14px;
             font-family: 'Share Tech Mono', monospace;
             font-size: 12px;
-            color: #8b68ab;
-            letter-spacing: 2px;
+            color: var(--text-muted);
+            letter-spacing: 1.8px;
             text-transform: uppercase;
+        }
+
+        @media (max-width: 1150px) {
+            #status-sidebar { display: none; }
         }
     </style>
 </head>
 
 <body>
 
+<!-- ÉCRAN D'ALLUMAGE BIOS / CRT -->
+<div id="crt-boot-screen">
+    <div id="crt-beam"></div>
+    <div id="bios-text"></div>
+</div>
+
 <div id="overlay"></div>
+<div id="radar-sweep"></div>
 <div id="ambient-glow"></div>
 
 <div id="main-hud">
 
-    <!-- En-tête L'Empire de Windu -->
-    <div class="hud-header tactical-border">
-        <div class="header-left">
-            <img id="logo" src="logo.png" alt="Insigne Empire de Windu">
-            <div id="title-container">
-                <div id="title">L'EMPIRE DE KUAT</div>
-                <div id="subtitle">FLOTTE AQUIS 7E ARMEE • CENTRE TACTIQUE SUPRÊME</div>
+    <div>
+        <div class="hazard-strip"></div>
+
+        <!-- En-tête Centralist United States -->
+        <div class="hud-header tactical-panel">
+            <div class="header-left">
+                <img id="logo" src="logo.png" alt="Emblème Centralist United States">
+                <div id="title-container">
+                    <div id="title">CENTRALIST UNITED STATES</div>
+                    <div id="subtitle">COMMANDEMENT FÉDÉRAL D'URGENCE • ZONE DE QUARANTAINE</div>
+                </div>
+            </div>
+            <div class="header-right">
+                AUTORITÉ : <span class="highlight-red">GOUVERNEMENT CENTRALISTE (UCUS)</span><br>
+                ÉTAT D'ALERTE : <span class="highlight-amber">DEFCON 1 // LOI MARTIALE ACTIVE</span><br>
+                COM-LINK : <span class="highlight-red">discord.gg/gP6PTu6hmz</span>
             </div>
         </div>
-        <div class="header-right">
-            AFFILIATION : <span class="highlight-gold">CONSEIL SOUVERAIN DE KUAT</span><br>
-            STATUT DES TROUPES : <span class="highlight-text">SYNCHRONISATION FLOTTE AQUIS 7E ARMEE EN COURS</span><br>
-            DISCORD : <a href="https://discord.gg/gP6PTu6hmz" target="_blank" class="discord-link">discord.gg/gP6PTu6hmz</a>
-        </div>
     </div>
 
-    <!-- Zone Centrale (Registre Holonet Impérial) -->
+    <!-- Zone Centrale : Console Terminal + Télémétrie Survie -->
     <div class="hud-center">
-        <div id="terminal" class="tactical-border">
+        <div id="terminal" class="tactical-panel">
+            <div class="terminal-topbar">
+                <span>TERMINAL MILITAIRE UCUS // CANAL SÉCURISÉ</span>
+                <span id="clock-display">00:00:00</span>
+            </div>
             <div id="log"></div>
-            <span id="line">█</span>
+            <div id="cursor-line">&gt; <span id="line">█</span></div>
+        </div>
+
+        <div id="status-sidebar" class="tactical-panel">
+            <div>
+                <div class="sidebar-title">TÉLÉMÉTRIE DU SECTEUR</div>
+                <div class="telemetry-row">
+                    <span>SECTEUR OP.</span>
+                    <span class="telemetry-val" id="map-name">ZONE CONTAMINÉE</span>
+                </div>
+                <div class="telemetry-row">
+                    <span>RADIATIONS</span>
+                    <span class="telemetry-val highlight-amber">4.82 mSv/h</span>
+                </div>
+                <div class="telemetry-row">
+                    <span>FILTRES NBC</span>
+                    <span class="telemetry-val highlight-red">REQUIS</span>
+                </div>
+                <div class="telemetry-row">
+                    <span>LÉTHALITÉ</span>
+                    <span class="telemetry-val">CRITIQUE</span>
+                </div>
+            </div>
+
+            <div class="directive-box">
+                <strong>DIRECTIVE UCUS-09 :</strong><br>
+                Maintenez la cohésion d'escouade. Tout personnel non identifié en zone rouge sera neutralisé sans sommation.
+            </div>
         </div>
     </div>
 
-    <!-- Barre de Progression & Ordres de Déploiement -->
-    <div class="hud-footer">
+    <!-- Pied de page : Barre de chargement -->
+    <div class="hud-footer tactical-panel">
         <div id="status-container">
-            <span id="status">Initialisation du réseau tactique améthyste...</span>
+            <span id="status">AMORÇAGE DU NOYAU CENTRALISTE...</span>
             <span id="counter">0%</span>
         </div>
         <div id="progress-container">
             <div id="progress"></div>
         </div>
-        
+
         <div class="hud-meta">
-            <div>ACCÈS IMPÉRIAL : CANAL CRYPTÉ CLASSIFIÉ HAOT</div>
-            <div>FREQUENCE HOLONET : 187.9 MHZ - SECTEUR PRIVILÉGIÉ</div>
+            <div>PROTOCOLE DE SURVIE // MATRICULE VÉRIFIÉ</div>
+            <div>FRÉQUENCE D'URGENCE : 442.8 MHz — TRANSMISSIONS SURVEILLÉES</div>
         </div>
     </div>
 
@@ -384,64 +577,102 @@
 </audio>
 
 <script>
+    const bootScreen = document.getElementById("crt-boot-screen");
+    const biosText = document.getElementById("bios-text");
+    const mainHud = document.getElementById("main-hud");
     const log = document.getElementById("log");
     const progress = document.getElementById("progress");
     const status = document.getElementById("status");
     const counter = document.getElementById("counter");
+    const mapNameEl = document.getElementById("map-name");
+    const clockEl = document.getElementById("clock-display");
 
     let percent = 0;
     let currentMsgIndex = 0;
     let totalFiles = 100;
     let neededFiles = 0;
+    let booted = false;
 
-    // Messages immersifs adaptés à L'Empire de Windu & la 187ème Légion
-    const messages = [
-        "Établissement de la liaison prioritaire avec le Commandement...",
-        "Authentification des identifiants...",
-        "Chargement des directives impériales et règles d'engagement...",
-        "Mise à jour des armures améthyste et systèmes de ciblage...",
-        "Synchronisation des récepteurs Vaapad et balises Holonet...",
-        "Analyse de la chaîne de commandement du Conseil Souverain...",
-        "Calibration de l'équipement lourd et des blasters DC-15...",
-        "Vérification des protocoles de sécurité du secteur impérial...",
-        "Validation de l'affectation de l'escouade par le Général...",
-        "Préparation des navettes de transport pour la zone d'opération...",
-        "Réseau Holonet stabilisé. Prêt pour la suprématie de l'Empire !"
+    // Horloge temps réel du terminal
+    setInterval(() => {
+        const now = new Date();
+        clockEl.innerText = now.toTimeString().split(" ")[0];
+    }, 500);
+
+    // Séquence d'allumage BIOS au démarrage
+    const biosLines = [
+        "UCUS-BIOS v4.09 // CENTRALIST UNITED STATES DEFENSE NETWORK",
+        "VÉRIFICATION MÉMOIRE CHIFFRÉE ............... [OK]",
+        "CONNEXION AU RELAI SATELLITE D'URGENCE ...... [ÉTABLIE]",
+        "AVERTISSEMENT : CONTAMINATION DÉTECTÉE EN SURFACE",
+        "CHARGEMENT DE L'INTERFACE TACTIQUE..."
     ];
 
-    function addLine(text) {
+    function runBootSequence() {
+        let idx = 0;
+        const bootTimer = setInterval(() => {
+            if (idx < biosLines.length) {
+                const line = document.createElement("div");
+                line.innerText = "> " + biosLines[idx];
+                biosText.appendChild(line);
+                idx++;
+            } else {
+                clearInterval(bootTimer);
+                setTimeout(() => {
+                    bootScreen.classList.add("boot-hidden");
+                    mainHud.classList.add("hud-online");
+                    booted = true;
+                    addLine("Terminal UCUS en ligne. Liaison établie avec le Commandement Central.");
+                    if (!navigator.userAgent.includes("GMod")) {
+                        setTimeout(load, 400);
+                    }
+                }, 450);
+            }
+        }, 260);
+    }
+
+    const messages = [
+        { text: "Authentification du matricule militaire auprès de l'État-Major...", warn: false },
+        { text: "Alerte atmosphérique : activation des capteurs biologiques et NBC...", warn: true },
+        { text: "Téléchargement des directives de loi martiale et codes d'engagement...", warn: false },
+        { text: "Initialisation du module médical de terrain et télémétrie vitale...", warn: false },
+        { text: "Calibration de l'arsenal tactique et des plaques balistiques...", warn: false },
+        { text: "Détection d'interférences hostiles sur le périmètre extérieur...", warn: true },
+        { text: "Synchronisation des balises radio d'escouade et fréquences cryptées...", warn: false },
+        { text: "Déploiement autorisé. Survivez et servez le Centralist United States.", warn: false }
+    ];
+
+    function addLine(text, isWarn = false) {
         const entry = document.createElement("div");
-        entry.className = "log-entry";
+        entry.className = isWarn ? "log-entry warn" : "log-entry";
         entry.innerText = text;
         log.appendChild(entry);
-        
-        const terminal = document.getElementById("terminal");
-        terminal.scrollTop = terminal.scrollHeight;
-        
-        while (log.childNodes.length > 8) {
+
+        while (log.childNodes.length > 7) {
             log.removeChild(log.firstChild);
         }
     }
 
     function load() {
         if (percent < 100) {
-            percent += Math.floor(Math.random() * 6) + 2;
+            percent += Math.floor(Math.random() * 7) + 3;
             if (percent > 100) percent = 100;
 
             updateProgress(percent);
 
             if (currentMsgIndex < messages.length && percent > (currentMsgIndex * (100 / messages.length))) {
-                addLine(messages[currentMsgIndex]);
-                status.innerText = messages[currentMsgIndex];
+                const item = messages[currentMsgIndex];
+                addLine(item.text, item.warn);
+                status.innerText = item.text;
                 currentMsgIndex++;
             }
 
-            setTimeout(load, 500);
+            setTimeout(load, 480);
         } else {
             progress.style.width = "100%";
             counter.innerText = "100%";
-            status.innerText = "Déploiement immédiat sur le théâtre d'opérations...";
-            addLine("Décret exécuté : POUR L'EMPIRE DE KUAT !");
+            status.innerText = "INSERTION SUR LE THÉÂTRE D'OPÉRATIONS...";
+            addLine("ACCÈS VALIDÉ — POUR LE CENTRALIST UNITED STATES !");
         }
     }
 
@@ -450,10 +681,17 @@
         counter.innerText = Math.round(percentage) + "%";
     }
 
-    // Intégrations Garry's Mod
+    // Callbacks officiels Garry's Mod
+    function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+        if (mapname) {
+            mapNameEl.innerText = mapname.toUpperCase();
+        }
+        addLine("Secteur cible identifié : " + (mapname || "INCONNU").toUpperCase());
+    }
+
     function SetFilesNeeded(needed) {
         neededFiles = needed;
-        addLine("Mise à jour Holonet : " + needed + " modules tactiques requis.");
+        addLine("Synchronisation logistique : " + needed + " paquets requis.", true);
     }
 
     function SetFilesTotal(total) {
@@ -461,9 +699,9 @@
     }
 
     function DownloadingFile(filename) {
-        status.innerText = "Téléchargement : " + filename;
-        addLine("Réception du fichier : " + filename);
-        
+        status.innerText = "TÉLÉCHARGEMENT : " + filename;
+        addLine("Réception paquet : " + filename);
+
         if (neededFiles > 0) {
             let filesDownloaded = totalFiles - neededFiles;
             let dynamicPercent = (filesDownloaded / totalFiles) * 100;
@@ -473,10 +711,11 @@
 
     function SetStatusChanged(statusText) {
         let frenchStatus = statusText;
-        if (statusText === "Getting Addon Info") frenchStatus = "Analyse des données d'armement impérial...";
-        else if (statusText === "Mounting Addons") frenchStatus = "Configuration des équipements 187th...";
-        else if (statusText === "Workshop Complete") frenchStatus = "Vérification des registres de l'Empire terminée.";
-        
+        if (statusText === "Getting Addon Info") frenchStatus = "Vérification de l'arsenal et des modules UCUS...";
+        else if (statusText === "Mounting Addons") frenchStatus = "Montage de l'équipement tactique sur le terrain...";
+        else if (statusText === "Workshop Complete") frenchStatus = "Registres logistiques UCUS validés.";
+        else if (statusText === "Sending client info") frenchStatus = "Transmission du matricule au poste de commandement...";
+
         status.innerText = frenchStatus;
         addLine(frenchStatus);
     }
@@ -484,14 +723,11 @@
     const music = document.getElementById("music");
     setTimeout(() => {
         music.volume = 0.08;
-        music.play().catch(() => {
-            console.log("Lecture audio en attente d'interaction utilisateur.");
-        });
-    }, 1000);
+        music.play().catch(() => {});
+    }, 800);
 
-    if (!navigator.userAgent.includes("GMod")) {
-        setTimeout(load, 500);
-    }
+    // Lancement de l'allumage CRT dès l'ouverture
+    window.addEventListener("DOMContentLoaded", runBootSequence);
 </script>
 
 </body>
